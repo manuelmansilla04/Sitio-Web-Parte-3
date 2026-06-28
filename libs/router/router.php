@@ -3,17 +3,14 @@
 require_once __DIR__ . '/request.php';
 require_once __DIR__ . '/response.php';
 
-// Parent class for Route and Middleware
 abstract class Routable {
     abstract public function run($request, $response);
 }
 
 abstract class Middleware extends Routable {
     public function match($url, $verb) {
-        // Middleware always matches
         return true;
     }
-
     abstract public function run($request, $response);
 }
 
@@ -24,39 +21,38 @@ class Route extends Routable {
     private $method;
     private $params;
 
-    public function __construct($url, $verb, $controller, $method){
+    public function __construct($url, $verb, $controller, $method) {
         $this->url = $url;
         $this->verb = $verb;
         $this->controller = $controller;
         $this->method = $method;
         $this->params = [];
     }
+    
     public function match($url, $verb) {
-        if($this->verb != $verb){
+        if ($this->verb != $verb) {
             return false;
         }
         $partsURL = explode("/", trim($url,'/'));
         $partsRoute = explode("/", trim($this->url,'/'));
-        if(count($partsRoute) != count($partsURL)){
+        if (count($partsRoute) != count($partsURL)) {
             return false;
         }
         foreach ($partsRoute as $key => $part) {
-            if($part[0] != ":"){
-                if($part != $partsURL[$key])
-                return false;
-            } 
-            else //es un parámetro
-            {
+            if ($part[0] != ":") {
+                if ($part != $partsURL[$key]) {   
+                    return false;
+                }
+            } else {
                 $this->params[''.substr($part,1)] = $partsURL[$key];
             }
         }
         return true;
     }
-    public function run($request, $response){
+    public function run($request, $response) {
         $controller = $this->controller;  
         $method = $this->method;
         $request->params = (object) $this->params;
-       
         (new $controller())->$method($request, $response);
     }
 }
@@ -77,13 +73,14 @@ class Router {
         foreach ($this->routeTable as $route) {
             if ($route->match($url, $verb)) {
                 $route->run($this->request, $this->response);
-                if($this->response->hasFinished())
+                if ($this->response->hasFinished()) {
                     return;
+                }
             }
         }
-        //Si ninguna ruta coincide con el pedido y se configuró ruta por defecto.
-        if ($this->defaultRoute != null)
+        if ($this->defaultRoute != null) {
             $this->defaultRoute->run($this->request, $this->response);
+        }
     }
 
     public function addMiddleware($middleware) {
