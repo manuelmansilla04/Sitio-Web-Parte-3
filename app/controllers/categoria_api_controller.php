@@ -1,7 +1,7 @@
 <?php
-    require_once './app/models/categorias.model.php';
-    require_once './app/views/api_view.php';
-    class CategoriaApiController {
+require_once './app/models/categorias.model.php';
+require_once './app/views/api_view.php';
+class CategoriaApiController {
     private $model;
 
     function __construct() {
@@ -30,8 +30,8 @@
             //en caso de venir con mayusculas se transforma a min para evitar errores
             $orden = strtolower($req->query->orden);
             $atributo = strtolower($req->query->atributo); 
-            $allowedAttrs = ['nombre','descripcion'];
-            if (!in_array($atributo,$allowedAttrs)) {
+            $allowedAttrs = ['nombre', 'descripcion'];
+            if (!in_array($atributo, $allowedAttrs)) {
                 return $res->json("Atributo de ordenamiento erroneo", 400);
             }
             if ($orden !== 'asc' && $orden !== 'desc') {    
@@ -47,8 +47,8 @@
             $offset = ((int)$req->query->page-1) * (int)$req->query->limit;
             $limit = $req->query->limit;
         }
-            
-        $categorias = $this->model->getCategorias($filters,$orden,$atributo,$offset,$limit);
+        
+        $categorias = $this->model->getCategorias($filters, $orden, $atributo, $offset, $limit);
             
         if (empty($categorias)) {
             return $res->json("No tenemos categorias que coincidan con tu búsqueda", 404);
@@ -83,7 +83,7 @@
             return $res->json('Error! No se pudo insertar la tarea', 500);
         }
 
-        //la devuelvo junto con un mensaje que confirme el exito del post
+        //devuelvo con mensaje de exito del post
         return $res->json("La categoria con el id=$categoria fue agregada con exito.", 201);
     }
 
