@@ -4,7 +4,7 @@ require_once './app/models/model.php';
 
 class CategoriasModel extends Model {
     
-    function __construct() { //abro conexion con la db
+    function __construct() {
         parent::__construct();
     }
 
@@ -53,13 +53,12 @@ class CategoriasModel extends Model {
             $sql .= "WHERE " . implode(" AND ", $conditions) . " ";
         }
         
-        // agregar orden
         if ($orden != null && $atributo != null){
             $sql.= " ORDER BY $atributo $orden";
         }
 
-        // paginado 
-        if ($limit != null && $limit > 0 && is_numeric($offset)){
+        //paginado
+        if ($limit != null && $limit > 0 && is_numeric($offset)) {
             $sql.= " LIMIT $limit Offset $offset";
         }
         
